@@ -1,0 +1,1765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Futuristic DevOps CI/CD pipeline automation platform utilizing Spring Boot, Jenkins, Docker, Maven, and GitHub.">
+    <title>Automating Modern DevOps Infrastructure</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #030014;
+            --panel-bg: rgba(10, 8, 24, 0.45);
+            --panel-border: rgba(168, 85, 247, 0.15);
+            --panel-border-hover: rgba(168, 85, 247, 0.4);
+            --accent-purple: #a855f7;
+            --accent-purple-glow: rgba(168, 85, 247, 0.6);
+            --accent-blue: #3b82f6;
+            --accent-blue-glow: rgba(59, 130, 246, 0.4);
+            --accent-emerald: #10b981;
+            --accent-emerald-glow: rgba(16, 185, 129, 0.4);
+            --text-primary: #f4f4f5;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --font-main: 'Outfit', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --gradient-primary: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%);
+            --glow-shadow: 0 0 25px var(--accent-purple-glow);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* --- Ambient Background Glows --- */
+        .glow-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(140px);
+            z-index: -1;
+            pointer-events: none;
+            opacity: 0.45;
+            mix-blend-mode: screen;
+            animation: pulse-glow 10s infinite alternate;
+        }
+
+        .glow-blob-1 {
+            width: 450px;
+            height: 450px;
+            background: radial-gradient(circle, var(--accent-purple) 0%, transparent 70%);
+            top: -10%;
+            left: 20%;
+        }
+
+        .glow-blob-2 {
+            width: 550px;
+            height: 550px;
+            background: radial-gradient(circle, var(--accent-blue) 0%, transparent 70%);
+            top: 40%;
+            right: -10%;
+            animation-delay: 2s;
+        }
+
+        .glow-blob-3 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, var(--accent-purple) 0%, transparent 70%);
+            bottom: 5%;
+            left: -5%;
+            animation-delay: 4s;
+        }
+
+        @keyframes pulse-glow {
+            0% {
+                transform: scale(1) translate(0, 0);
+                opacity: 0.35;
+            }
+            100% {
+                transform: scale(1.15) translate(20px, 30px);
+                opacity: 0.55;
+            }
+        }
+
+        /* --- Grid overlay --- */
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+            background-size: 60px 60px;
+            background-position: center;
+            z-index: -1;
+            pointer-events: none;
+            mask-image: radial-gradient(circle, black 40%, transparent 95%);
+        }
+
+        /* --- Navigation Bar --- */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(3, 0, 20, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            z-index: 1000;
+            padding: 1.25rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            stroke: var(--accent-purple);
+            stroke-width: 2;
+            fill: none;
+            filter: drop-shadow(0 0 8px var(--accent-purple-glow));
+        }
+
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            background: linear-gradient(to right, #fff, var(--text-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.25rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+            padding: 0.25rem 0;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-purple);
+            transition: width 0.3s ease;
+            box-shadow: 0 0 8px var(--accent-purple-glow);
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-btn {
+            background: rgba(168, 85, 247, 0.1);
+            border: 1px solid var(--accent-purple);
+            color: var(--text-primary);
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            font-family: var(--font-main);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.15);
+        }
+
+        .nav-btn:hover {
+            background: var(--accent-purple);
+            box-shadow: 0 0 20px var(--accent-purple-glow);
+            transform: translateY(-2px);
+        }
+
+        /* --- Container --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            width: 100%;
+        }
+
+        /* --- Sections Layout --- */
+        section {
+            padding: 7.5rem 0 3.5rem;
+            position: relative;
+        }
+
+        /* --- Hero Section --- */
+        #hero {
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+            padding-top: 8rem;
+            text-align: center;
+        }
+
+        .hero-content {
+            max-width: 850px;
+            margin: 0 auto;
+            z-index: 10;
+        }
+
+        .badge {
+            background: rgba(168, 85, 247, 0.12);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            color: #d8b4fe;
+            padding: 0.4rem 1rem;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.05);
+            animation: pulse-border 2s infinite;
+        }
+
+        @keyframes pulse-border {
+            0% { border-color: rgba(168, 85, 247, 0.3); }
+            50% { border-color: rgba(168, 85, 247, 0.7); }
+            100% { border-color: rgba(168, 85, 247, 0.3); }
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -2px;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #ffffff 30%, #e9d5ff 70%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1rem, 2.5vw, 1.25rem);
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 3rem;
+            max-width: 680px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.9rem 2.2rem;
+            border-radius: 8px;
+            font-family: var(--font-main);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: #fff;
+            border: none;
+            box-shadow: 0 0 25px var(--accent-purple-glow);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 0 35px var(--accent-purple-glow), 0 0 60px rgba(59, 130, 246, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(8px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* --- Section Header Styles --- */
+        .section-header {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto 4rem;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 3.5vw, 2.75rem);
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #ffffff, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .section-desc {
+            font-size: 1.05rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* --- Cards and Glassmorphism --- */
+        .glass-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 16px;
+            padding: 2.25rem;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 100%);
+            pointer-events: none;
+        }
+
+        .glass-card:hover {
+            border-color: var(--panel-border-hover);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(168, 85, 247, 0.08);
+        }
+
+        /* --- About Section --- */
+        .about-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .about-card h3 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .about-card p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            font-size: 0.98rem;
+        }
+
+        .card-num {
+            font-family: var(--font-mono);
+            color: var(--accent-purple);
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 0.5rem;
+        }
+
+        /* --- Tools & Technologies Section --- */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 1024px) {
+            .tools-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .tools-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .tool-card {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1.5rem;
+        }
+
+        .tool-icon-wrapper {
+            width: 64px;
+            height: 64px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .tool-icon-wrapper svg {
+            width: 32px;
+            height: 32px;
+            fill: none;
+            stroke: var(--text-secondary);
+            stroke-width: 1.5;
+            transition: all 0.3s ease;
+        }
+
+        .tool-card:hover .tool-icon-wrapper {
+            background: rgba(168, 85, 247, 0.1);
+            border-color: var(--accent-purple);
+            transform: scale(1.1);
+            box-shadow: 0 0 15px var(--accent-purple-glow);
+        }
+
+        .tool-card:hover .tool-icon-wrapper svg {
+            stroke: var(--accent-purple);
+            filter: drop-shadow(0 0 5px var(--accent-purple-glow));
+        }
+
+        .tool-card h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: #fff;
+        }
+
+        .tool-card p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* --- CI/CD Workflow Timeline Section --- */
+        .timeline-wrapper {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 20px;
+            padding: 4rem 2rem;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .timeline-track {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            max-width: 1000px;
+            margin: 0 auto;
+            z-index: 2;
+        }
+
+        /* Horizontal Connector Lines */
+        .timeline-connector {
+            position: absolute;
+            top: 28px;
+            left: 5%;
+            width: 90%;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.05);
+            z-index: -1;
+        }
+
+        .timeline-progress-line {
+            position: absolute;
+            top: 28px;
+            left: 5%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-purple) 0%, var(--accent-blue) 50%, var(--accent-emerald) 100%);
+            z-index: -1;
+            transform-origin: left;
+            animation: grow-line 5s infinite linear;
+        }
+
+        @keyframes grow-line {
+            0% { transform: scaleX(0); }
+            80% { transform: scaleX(0.9); opacity: 1; }
+            100% { transform: scaleX(0.9); opacity: 0; }
+        }
+
+        .timeline-node {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            width: 15%;
+            position: relative;
+        }
+
+        .timeline-circle {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #0d0b1f;
+            border: 2px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.25rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .timeline-circle svg {
+            width: 24px;
+            height: 24px;
+            stroke: var(--text-secondary);
+            stroke-width: 1.75;
+            fill: none;
+            transition: all 0.3s ease;
+        }
+
+        /* Pulse Animation on active timeline nodes */
+        .timeline-circle::after {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            border-radius: 50%;
+            border: 2px dashed transparent;
+            animation: rotate-dashed 8s linear infinite;
+        }
+
+        .timeline-node:hover .timeline-circle {
+            transform: scale(1.15);
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 20px var(--accent-purple-glow);
+        }
+
+        .timeline-node:hover .timeline-circle svg {
+            stroke: #fff;
+        }
+
+        /* Success & custom styling states */
+        .timeline-node.success .timeline-circle {
+            border-color: var(--accent-purple);
+            background: rgba(168, 85, 247, 0.1);
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.25);
+        }
+        
+        .timeline-node.success .timeline-circle svg {
+            stroke: var(--accent-purple);
+        }
+
+        .timeline-node.success .timeline-circle::after {
+            border-color: rgba(168, 85, 247, 0.4);
+        }
+
+        .timeline-label {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.25rem;
+        }
+
+        .timeline-subtext {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        @keyframes rotate-dashed {
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Mobile Timeline Styling */
+        @media (max-width: 768px) {
+            .timeline-track {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 2.5rem;
+                padding-left: 2rem;
+            }
+
+            .timeline-connector {
+                top: 0;
+                left: 48px;
+                width: 2px;
+                height: 85%;
+            }
+
+            .timeline-progress-line {
+                top: 0;
+                left: 48px;
+                width: 2px;
+                height: 85%;
+                transform-origin: top;
+                animation: grow-line-vertical 5s infinite linear;
+            }
+
+            @keyframes grow-line-vertical {
+                0% { transform: scaleY(0); }
+                80% { transform: scaleY(0.9); opacity: 1; }
+                100% { transform: scaleY(0.9); opacity: 0; }
+            }
+
+            .timeline-node {
+                flex-direction: row;
+                width: 100%;
+                text-align: left;
+                gap: 1.5rem;
+            }
+
+            .timeline-circle {
+                margin-bottom: 0;
+            }
+        }
+
+        /* --- Features Section --- */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Neon gradient border effect */
+        .feature-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 16px;
+            padding: 1px;
+            background: linear-gradient(135deg, transparent 60%, rgba(168, 85, 247, 0.3) 100%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            transition: background 0.3s ease;
+        }
+
+        .feature-card:hover::after {
+            background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent-blue) 50%, var(--accent-emerald) 100%);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            background: rgba(168, 85, 247, 0.1);
+            color: var(--accent-purple);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.2));
+        }
+
+        .feature-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* --- Pipeline Status Dashboard Section --- */
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Status metrics */
+        .status-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .status-card {
+            background: rgba(8, 6, 20, 0.7);
+        }
+
+        .status-indicators {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .indicator-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.25rem;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .indicator-item:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .indicator-label {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.95rem;
+        }
+
+        .indicator-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--accent-emerald);
+            box-shadow: 0 0 10px var(--accent-emerald-glow);
+            animation: pulse-dot 1.5s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
+            70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        .indicator-status {
+            font-size: 0.85rem;
+            color: var(--accent-emerald);
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        /* Stats Grid */
+        .stats-subgrid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .stat-box {
+            background: rgba(255,255,255,0.015);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1.25rem;
+            text-align: left;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-family: var(--font-mono);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .stat-trend {
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+            color: var(--accent-emerald);
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        /* Terminal Console */
+        .terminal {
+            background: #05030e;
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            height: 480px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6), inset 0 0 10px rgba(168, 85, 247, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .terminal-header {
+            background: #090716;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 0.75rem 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .terminal-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .terminal-dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+        }
+
+        .terminal-dot-red { background: #ef4444; }
+        .terminal-dot-yellow { background: #f59e0b; }
+        .terminal-dot-green { background: #10b981; }
+
+        .terminal-title {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        .terminal-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .terminal-run-btn {
+            background: rgba(168, 85, 247, 0.15);
+            border: 1px solid var(--accent-purple);
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.25rem 0.65rem;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s ease;
+        }
+
+        .terminal-run-btn:hover {
+            background: var(--accent-purple);
+            box-shadow: 0 0 12px var(--accent-purple-glow);
+        }
+
+        .terminal-run-btn svg {
+            width: 12px;
+            height: 12px;
+            stroke: currentColor;
+            fill: currentColor;
+        }
+
+        .terminal-body {
+            padding: 1.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            line-height: 1.6;
+            overflow-y: auto;
+            flex-grow: 1;
+            color: #d1d5db;
+        }
+
+        .log-line {
+            margin-bottom: 0.4rem;
+            opacity: 0.95;
+            white-space: pre-wrap;
+            word-break: break-all;
+            display: flex;
+        }
+
+        .log-tag {
+            color: var(--accent-purple);
+            margin-right: 0.5rem;
+            flex-shrink: 0;
+            user-select: none;
+        }
+
+        .log-text-green { color: var(--accent-emerald); }
+        .log-text-blue { color: #60a5fa; }
+        .log-text-yellow { color: #fbbf24; }
+        .log-text-magenta { color: #f472b6; }
+        
+        .terminal-cursor {
+            display: inline-block;
+            width: 8px;
+            height: 15px;
+            background: var(--accent-purple);
+            box-shadow: 0 0 5px var(--accent-purple-glow);
+            animation: blink 1s step-end infinite;
+            vertical-align: middle;
+            margin-left: 2px;
+        }
+
+        @keyframes blink {
+            from, to { background-color: transparent; }
+            50% { background-color: var(--accent-purple); }
+        }
+
+        /* --- Footer Section --- */
+        footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 4rem 0 3rem;
+            background: rgba(3, 0, 20, 0.9);
+            position: relative;
+            z-index: 10;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .footer-logo svg {
+            width: 24px;
+            height: 24px;
+            stroke: var(--accent-purple);
+            fill: none;
+        }
+
+        .footer-logo span {
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #fff;
+        }
+
+        .footer-text {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .footer-text a {
+            color: var(--accent-purple);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .footer-text a:hover {
+            color: #fff;
+            text-shadow: 0 0 8px var(--accent-purple-glow);
+        }
+
+        @media (max-width: 600px) {
+            .footer-content {
+                flex-direction: column;
+                gap: 1.5rem;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Radial Glow Blobs -->
+    <div class="glow-blob glow-blob-1"></div>
+    <div class="glow-blob glow-blob-2"></div>
+    <div class="glow-blob glow-blob-3"></div>
+
+    <!-- Background Grid -->
+    <div class="grid-overlay"></div>
+
+    <!-- Navigation Header -->
+    <header>
+        <a href="#" class="logo">
+            <svg class="logo-icon" viewBox="0 0 24 24">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+            </svg>
+            <span class="logo-text">ANTIGRAVITY</span>
+        </a>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="#about">About</a></li>
+                <li><a href="#tools">Tools</a></li>
+                <li><a href="#workflow">Workflow</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#status">Status</a></li>
+            </ul>
+        </nav>
+        <a href="#status" class="nav-btn">Monitor CI/CD</a>
+    </header>
+
+    <!-- Main Content Container -->
+    <div class="container">
+
+        <!-- 1. Hero Section -->
+        <section id="hero">
+            <div class="hero-content">
+                <div class="badge">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M12 8v4l3 3"></path>
+                    </svg>
+                    v0.0.1-SNAPSHOT Active
+                </div>
+                <h1 class="hero-title">Automating Modern DevOps Infrastructure</h1>
+                <p class="hero-subtitle">
+                    Complete CI/CD pipeline implementation using Jenkins, Docker, Maven, GitHub, and Spring Boot. Experience automated testing, containerization, and continuous delivery at scale.
+                </p>
+                <div class="hero-actions">
+                    <a href="#workflow" class="btn btn-primary">
+                        View Pipeline
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </a>
+                    <a href="#status" class="btn btn-secondary">
+                        Deployment Status
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                            <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                            <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                            <line x1="6" y1="18" x2="6.01" y2="18"></line>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. About Project Section -->
+        <section id="about">
+            <div class="section-header">
+                <h2 class="section-title">Project Overview</h2>
+                <p class="section-desc">
+                    An automated software delivery pipeline bridging version control, code compilation, container creation, and active orchestration.
+                </p>
+            </div>
+            <div class="about-grid">
+                <div class="glass-card about-card">
+                    <div class="card-num">01 / ARCHITECTURE</div>
+                    <h3>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-purple)" stroke-width="2">
+                            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                            <polyline points="2 17 12 22 22 17"></polyline>
+                            <polyline points="2 12 12 17 22 12"></polyline>
+                        </svg>
+                        Automated Delivery
+                    </h3>
+                    <p>
+                        This infrastructure facilitates hands-free operations. Each repository commit triggers an end-to-end cycle including testing, artifact builds, and target packaging.
+                    </p>
+                </div>
+                <div class="glass-card about-card">
+                    <div class="card-num">02 / DEPLOYMENT</div>
+                    <h3>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-purple)" stroke-width="2">
+                            <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+                            <line x1="7" y1="2" x2="7" y2="22"></line>
+                            <line x1="17" y1="2" x2="17" y2="22"></line>
+                            <line x1="2" y1="12" x2="22" y2="12"></line>
+                        </svg>
+                        Isolated Environment
+                    </h3>
+                    <p>
+                        Through containerized execution, we eliminate dependency drift. The Spring Boot JAR runs inside dedicated OCI-compliant environments ensuring absolute environment parity.
+                    </p>
+                </div>
+                <div class="glass-card about-card">
+                    <div class="card-num">03 / MONITORING</div>
+                    <h3>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-purple)" stroke-width="2">
+                            <line x1="18" y1="20" x2="18" y2="10"></line>
+                            <line x1="12" y1="20" x2="12" y2="4"></line>
+                            <line x1="6" y1="20" x2="6" y2="14"></line>
+                        </svg>
+                        Continuous Health Checks
+                    </h3>
+                    <p>
+                        Real-time status indicators assess container health, JVM memory load, CPU performance, and build histories to ensure 99.9% application availability.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Tools & Technologies Section -->
+        <section id="tools">
+            <div class="section-header">
+                <h2 class="section-title">Tools & Technologies</h2>
+                <p class="section-desc">
+                    Engineered using industry-standard DevOps tools to create a robust and reliable automation chain.
+                </p>
+            </div>
+            <div class="tools-grid">
+                <!-- GitHub -->
+                <div class="glass-card tool-card">
+                    <div class="tool-icon-wrapper">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+                        </svg>
+                    </div>
+                    <h3>GitHub</h3>
+                    <p>Version control provider hosting repositories and sending payloads to automate operations.</p>
+                </div>
+                <!-- Jenkins -->
+                <div class="glass-card tool-card">
+                    <div class="tool-icon-wrapper">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M12 6v6l4 2"></path>
+                        </svg>
+                    </div>
+                    <h3>Jenkins</h3>
+                    <p>Automation orchestrator compiling code, running tests, and preparing runtime builds.</p>
+                </div>
+                <!-- Docker -->
+                <div class="glass-card tool-card">
+                    <div class="tool-icon-wrapper">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M22 7.6C22 5.6 20.4 4 18.4 4c-.7 0-1.4.2-1.9.6C15.8 2.6 14 1.2 11.9 1.2S8 2.6 7.3 4.6c-.5-.4-1.2-.6-1.9-.6C3.4 4 1.8 5.6 1.8 7.6c0 1.2.6 2.2 1.5 2.8C2 11.5.8 13 1 14.8c.2 2.2 2 3.9 4.2 3.9h13.6c2.2 0 4-1.7 4.2-3.9.2-1.8-1-3.3-2.3-4.4.9-.6 1.5-1.6 1.5-2.8z"/>
+                        </svg>
+                    </div>
+                    <h3>Docker</h3>
+                    <p>Container technology ensuring immutable environments for applications.</p>
+                </div>
+                <!-- Maven -->
+                <div class="glass-card tool-card">
+                    <div class="tool-icon-wrapper">
+                        <svg viewBox="0 0 24 24">
+                            <polyline points="16 16 12 12 8 16"></polyline>
+                            <line x1="12" y1="12" x2="12" y2="21"></line>
+                            <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
+                            <polyline points="16 16 12 12 8 16"></polyline>
+                        </svg>
+                    </div>
+                    <h3>Maven</h3>
+                    <p>Lifecycle manager executing unit verification, packaging, and dependency builds.</p>
+                </div>
+                <!-- Spring Boot -->
+                <div class="glass-card tool-card">
+                    <div class="tool-icon-wrapper">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                    </div>
+                    <h3>Spring Boot</h3>
+                    <p>Core backend technology hosting REST APIs with light Tomcat servers.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. CI/CD Workflow Section -->
+        <section id="workflow">
+            <div class="section-header">
+                <h2 class="section-title">CI/CD Pipeline Flow</h2>
+                <p class="section-desc">
+                    A synchronized layout mapping stages from code writing down to production runtime.
+                </p>
+            </div>
+            <div class="timeline-wrapper">
+                <div class="timeline-connector"></div>
+                <div class="timeline-progress-line"></div>
+                
+                <div class="timeline-track">
+                    <!-- Step 1: Developer -->
+                    <div class="timeline-node success" onclick="showLogStep('dev')">
+                        <div class="timeline-circle">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                        </div>
+                        <div class="timeline-label">Developer</div>
+                        <div class="timeline-subtext">Writes code edits</div>
+                    </div>
+                    
+                    <!-- Step 2: GitHub -->
+                    <div class="timeline-node success" onclick="showLogStep('github')">
+                        <div class="timeline-circle">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+                            </svg>
+                        </div>
+                        <div class="timeline-label">GitHub</div>
+                        <div class="timeline-subtext">Triggers Webhooks</div>
+                    </div>
+
+                    <!-- Step 3: Jenkins -->
+                    <div class="timeline-node success" onclick="showLogStep('jenkins')">
+                        <div class="timeline-circle">
+                            <svg viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                        </div>
+                        <div class="timeline-label">Jenkins</div>
+                        <div class="timeline-subtext">Orchestrates Build</div>
+                    </div>
+
+                    <!-- Step 4: Maven Build -->
+                    <div class="timeline-node success" onclick="showLogStep('maven')">
+                        <div class="timeline-circle">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                            </svg>
+                        </div>
+                        <div class="timeline-label">Maven Build</div>
+                        <div class="timeline-subtext">Compiles Artifact</div>
+                    </div>
+
+                    <!-- Step 5: Docker Image -->
+                    <div class="timeline-node success" onclick="showLogStep('docker')">
+                        <div class="timeline-circle">
+                            <svg viewBox="0 0 24 24">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="9" y1="3" x2="9" y2="21"></line>
+                                <line x1="15" y1="3" x2="15" y2="21"></line>
+                                <line x1="3" y1="9" x2="21" y2="9"></line>
+                                <line x1="3" y1="15" x2="21" y2="15"></line>
+                            </svg>
+                        </div>
+                        <div class="timeline-label">Docker Image</div>
+                        <div class="timeline-subtext">Creates Container</div>
+                    </div>
+
+                    <!-- Step 6: Deployment -->
+                    <div class="timeline-node success" onclick="showLogStep('deploy')">
+                        <div class="timeline-circle">
+                            <svg viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="5"></circle>
+                                <line x1="12" y1="1" x2="12" y2="3"></line>
+                                <line x1="12" y1="21" x2="12" y2="23"></line>
+                                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                                <line x1="1" y1="12" x2="3" y2="12"></line>
+                                <line x1="21" y1="12" x2="23" y2="12"></line>
+                                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                            </svg>
+                        </div>
+                        <div class="timeline-label">Deployment</div>
+                        <div class="timeline-subtext">Runs App Live</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Features Section -->
+        <section id="features">
+            <div class="section-header">
+                <h2 class="section-title">Engineered for Velocity</h2>
+                <p class="section-desc">
+                    Comprehensive pipelines delivering clean compilations and zero manual server administration.
+                </p>
+            </div>
+            <div class="features-grid">
+                <!-- Feature 1 -->
+                <div class="glass-card feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                        </svg>
+                    </div>
+                    <h3>Automated Build Pipeline</h3>
+                    <p>Triggers immediate code verification operations down the automated chain on developer branch commits.</p>
+                </div>
+                <!-- Feature 2 -->
+                <div class="glass-card feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                        </svg>
+                    </div>
+                    <h3>Continuous Integration</h3>
+                    <p>Resolves libraries, compilations, and tests dynamically, reporting system warnings within minutes.</p>
+                </div>
+                <!-- Feature 3 -->
+                <div class="glass-card feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24">
+                            <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                            <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                            <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                            <line x1="6" y1="18" x2="6.01" y2="18"></line>
+                        </svg>
+                    </div>
+                    <h3>Dockerized Deployment</h3>
+                    <p>Packages targets in isolated environments. The Spring Boot jar runs in repeatable host containers.</p>
+                </div>
+                <!-- Feature 4 -->
+                <div class="glass-card feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24">
+                            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                            <polyline points="2 17 12 22 22 17"></polyline>
+                            <polyline points="2 12 12 17 22 12"></polyline>
+                        </svg>
+                    </div>
+                    <h3>Scalable Architecture</h3>
+                    <p>Modular elements support scaling horizontally without disrupting current service states.</p>
+                </div>
+                <!-- Feature 5 -->
+                <div class="glass-card feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                    </div>
+                    <h3>Fast Build Verification</h3>
+                    <p>Speeds delivery via automated checks and lightweight builds prior to cloud propagation.</p>
+                </div>
+                <!-- Feature 6 -->
+                <div class="glass-card feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                        </svg>
+                    </div>
+                    <h3>DevOps Automation</h3>
+                    <p>Integrates code pushes, testing runs, docker bundling, and target service hosting seamlessly.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Pipeline Status Section -->
+        <section id="status">
+            <div class="section-header">
+                <h2 class="section-title">Deployment Status</h2>
+                <p class="section-desc">
+                    Active operational dashboard monitoring current environment health and live-simulating terminal steps.
+                </p>
+            </div>
+            
+            <div class="dashboard-container">
+                <!-- Status metrics (Sidebar) -->
+                <div class="status-sidebar">
+                    <div class="glass-card status-card">
+                        <div class="status-indicators">
+                            <div class="indicator-item">
+                                <div class="indicator-label">
+                                    <div class="indicator-dot"></div>
+                                    Build Status
+                                </div>
+                                <span class="indicator-status">✔ Successful</span>
+                            </div>
+                            <div class="indicator-item">
+                                <div class="indicator-label">
+                                    <div class="indicator-dot" style="background: var(--accent-emerald);"></div>
+                                    Docker Container
+                                </div>
+                                <span class="indicator-status">✔ Running</span>
+                            </div>
+                            <div class="indicator-item">
+                                <div class="indicator-label">
+                                    <div class="indicator-dot" style="background: var(--accent-emerald);"></div>
+                                    Jenkins Pipeline
+                                </div>
+                                <span class="indicator-status">✔ Active</span>
+                            </div>
+                            <div class="indicator-item">
+                                <div class="indicator-label">
+                                    <div class="indicator-dot" style="background: var(--accent-emerald);"></div>
+                                    CI/CD Workflow
+                                </div>
+                                <span class="indicator-status">✔ Operational</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Statistics grid -->
+                    <div class="stats-subgrid">
+                        <div class="stat-box glass-card">
+                            <div class="stat-label">CPU LOAD</div>
+                            <div class="stat-value" id="cpu-load">2.4%</div>
+                            <div class="stat-trend">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                                    <polyline points="17 6 23 6 23 12"></polyline>
+                                </svg>
+                                Optimal
+                            </div>
+                        </div>
+                        <div class="stat-box glass-card">
+                            <div class="stat-label">HEAP USAGE</div>
+                            <div class="stat-value" id="mem-usage">248MB</div>
+                            <div class="stat-trend">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
+                                    <polyline points="17 18 23 18 23 12"></polyline>
+                                </svg>
+                                48.4%
+                            </div>
+                        </div>
+                        <div class="stat-box glass-card">
+                            <div class="stat-label">UPTIME</div>
+                            <div class="stat-value">99.98%</div>
+                            <div class="stat-trend">14 Days</div>
+                        </div>
+                        <div class="stat-box glass-card">
+                            <div class="stat-label">BUILD TIME</div>
+                            <div class="stat-value">45.2s</div>
+                            <div class="stat-trend" style="color: var(--accent-purple);">Cached</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive Terminal Simulator -->
+                <div class="terminal">
+                    <div class="terminal-header">
+                        <div class="terminal-dots">
+                            <div class="terminal-dot terminal-dot-red"></div>
+                            <div class="terminal-dot terminal-dot-yellow"></div>
+                            <div class="terminal-dot terminal-dot-green"></div>
+                        </div>
+                        <div class="terminal-title">pipeline-logs@antigravity:~$</div>
+                        <div class="terminal-actions">
+                            <button class="terminal-run-btn" id="run-pipeline-btn" onclick="triggerPipelineRun()">
+                                <svg viewBox="0 0 24 24">
+                                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                </svg>
+                                Trigger Run
+                            </button>
+                        </div>
+                    </div>
+                    <div class="terminal-body" id="terminal-logs">
+                        <!-- Simulated lines populate here via JS -->
+                        <span class="terminal-cursor"></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div> <!-- End container -->
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <a href="#" class="footer-logo">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                    </svg>
+                    <span>ANTIGRAVITY // PIPELINE</span>
+                </a>
+                <div class="footer-text">
+                    Developed by <a href="mailto:riddhima@example.com">Riddhima Rai</a> &copy; 2026. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Interactive script -->
+    <script>
+        const logs = {
+            dev: [
+                "[/] DEVELOPER WORKSTATION ACTIVE",
+                "   -> Branch: main | Commit: a9f8e72",
+                "   -> Changes: Redesigned dashboard index.html frontend code",
+                "   -> Command executed: git commit -am 'redesign: dark futuristic frontend UI'",
+                "   -> Command executed: git push origin main",
+                "   -> payload transmitted successfully to remote origin"
+            ],
+            github: [
+                "[INFO] GITHUB WEBHOOK DETECTED",
+                "   -> Remote push event registered on branch 'main'",
+                "   -> Repository: ridddhhimaaa/Devops-ci-cd-pipeline",
+                "   -> Delivering payload to Jenkins REST URL...",
+                "   -> Status Code 200: Hook request queued by Jenkins build daemon."
+            ],
+            jenkins: [
+                "[INFO] JENKINS AUTO-TRIGGER WORKSPACE INITIALIZATION",
+                "   -> Fetching job definition for 'devops-project-pipeline'...",
+                "   -> SCM checkout completed in 1.43s",
+                "   -> Executing stages defined in Jenkinsfile:",
+                "      1. Build Application (Maven compilation)",
+                "      2. Build Docker Image (Packaging OCI image)"
+            ],
+            maven: [
+                "[INFO] RUNNING MAVEN BUILD SUITE (mvn clean package)...",
+                "   -> [INFO] Scanning for projects...",
+                "   -> [INFO] Building devops-project 0.0.1-SNAPSHOT",
+                "   -> [INFO] --- maven-compiler-plugin:3.11.0:compile (default-compile) @ devops-project ---",
+                "   -> [INFO] Recompiling sources: 2 classes detected",
+                "   -> [INFO] --- maven-surefire-plugin:3.1.2:test (default-test) @ devops-project ---",
+                "   -> [INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0",
+                "   -> [INFO] Building jar: target/devops-project-0.0.1-SNAPSHOT.jar",
+                "   -> [INFO] BUILD SUCCESS"
+            ],
+            docker: [
+                "[INFO] EXECUTING DOCKER PACKAGING (docker build -t devops-project .)...",
+                "   -> Sending build context to Docker daemon 18.25MB",
+                "   -> Step 1/3 : FROM eclipse-temurin:21",
+                "   -> ---> 9cd7fb2cf8df",
+                "   -> Step 2/3 : COPY target/devops-project-0.0.1-SNAPSHOT.jar app.jar",
+                "   -> ---> 78f89ba9c1e2",
+                "   -> Step 3/3 : ENTRYPOINT ['java','-jar','/app.jar']",
+                "   -> Successfully built 78f89ba9c1e2",
+                "   -> Successfully tagged devops-project:latest"
+            ],
+            deploy: [
+                "[INFO] DEPLOYMENT STAGE RUNNING...",
+                "   -> Stopping current active container container_id=8f29e11...",
+                "   -> Running command: docker run -d -p 8080:8080 --name app devops-project",
+                "   -> Booting Spring Boot environment...",
+                "      :: Spring Boot :: (v3.2.0)",
+                "   -> DevopsProjectApplication started successfully on port 8080 (http)",
+                "   -> [HEALTH] Container is reporting as HEALTHY",
+                "✔ CI/CD PIPELINE COMPLETE & SERVICE OPERATIONAL"
+            ]
+        };
+
+        const logSequences = [
+            { type: 'magenta', text: "pipeline-logs@antigravity:~$ initiating pipeline playback system..." },
+            { type: 'default', text: "[SCM] Pulling latest git tree from remote repository..." },
+            { type: 'green', text: "[SCM] Fetch complete. Commit Hash: a9f8e72 | Author: Riddhima Rai" },
+            { type: 'default', text: "[MAVEN] Scanning codebase directories and fetching pom.xml config..." },
+            { type: 'blue', text: "[MAVEN] Executing build command: mvn clean package" },
+            { type: 'default', text: "[MAVEN] [INFO] --- maven-compiler-plugin:3.11.0:compile (default-compile) @ devops-project ---" },
+            { type: 'default', text: "[MAVEN] [INFO] Recompiling resources..." },
+            { type: 'default', text: "[MAVEN] [INFO] --- maven-surefire-plugin:3.1.2:test (default-test) @ devops-project ---" },
+            { type: 'green', text: "[MAVEN] [INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0 - BUILD SUCCESS" },
+            { type: 'default', text: "[DOCKER] Building runtime layer container from: Dockerfile" },
+            { type: 'blue', text: "[DOCKER] Sending context to daemon (18.25 MB)..." },
+            { type: 'default', text: "[DOCKER] Step 1/3 : FROM eclipse-temurin:21" },
+            { type: 'default', text: "[DOCKER] Step 2/3 : COPY target/devops-project-0.0.1-SNAPSHOT.jar app.jar" },
+            { type: 'default', text: "[DOCKER] Step 3/3 : ENTRYPOINT [\"java\",\"-jar\",\"/app.jar\"]" },
+            { type: 'green', text: "[DOCKER] Image build successful. Tagged 'devops-project:latest'" },
+            { type: 'default', text: "[DEPLOY] Launching container instance 'devops-app' on server port 8080..." },
+            { type: 'green', text: "[DEPLOY] Container operational. Console out: Tomcat initialized on port 8080" },
+            { type: 'green', text: "[DEPLOY] Startup complete in 2.34s. System state: HEALTHY" },
+            { type: 'magenta', text: "✔ CI/CD Workflow active and serving client requests." }
+        ];
+
+        let typingActive = false;
+
+        function showLogStep(stepKey) {
+            if (typingActive) return;
+            const terminalBody = document.getElementById("terminal-logs");
+            terminalBody.innerHTML = '';
+            
+            const stepLogs = logs[stepKey];
+            if (!stepLogs) return;
+
+            stepLogs.forEach((lineText, idx) => {
+                const logLineEl = document.createElement("div");
+                logLineEl.className = "log-line";
+                
+                const tagEl = document.createElement("span");
+                tagEl.className = "log-tag";
+                tagEl.textContent = `[${stepKey.toUpperCase()}]`;
+                
+                const textEl = document.createElement("span");
+                textEl.textContent = lineText;
+                
+                if (lineText.includes("✔") || lineText.includes("SUCCESS") || lineText.includes("HEALTHY")) {
+                    textEl.className = "log-text-green";
+                } else if (lineText.includes("git push") || lineText.includes("mvn clean") || lineText.includes("docker build")) {
+                    textEl.className = "log-text-blue";
+                } else if (lineText.includes("Branch:") || lineText.includes("Step")) {
+                    textEl.className = "log-text-yellow";
+                }
+
+                logLineEl.appendChild(tagEl);
+                logLineEl.appendChild(textEl);
+                terminalBody.appendChild(logLineEl);
+            });
+            
+            // Add cursor back
+            const cursor = document.createElement("span");
+            cursor.className = "terminal-cursor";
+            terminalBody.appendChild(cursor);
+            
+            terminalBody.scrollTop = terminalBody.scrollHeight;
+        }
+
+        async function triggerPipelineRun() {
+            if (typingActive) return;
+            typingActive = true;
+            
+            const btn = document.getElementById("run-pipeline-btn");
+            btn.disabled = true;
+            btn.style.opacity = 0.5;
+            btn.style.cursor = 'not-allowed';
+
+            const terminalBody = document.getElementById("terminal-logs");
+            terminalBody.innerHTML = '';
+            
+            // Add cursor
+            const cursor = document.createElement("span");
+            cursor.className = "terminal-cursor";
+            terminalBody.appendChild(cursor);
+
+            for (let i = 0; i < logSequences.length; i++) {
+                const sequence = logSequences[i];
+                
+                const logLineEl = document.createElement("div");
+                logLineEl.className = "log-line";
+
+                const tagEl = document.createElement("span");
+                tagEl.className = "log-tag";
+                tagEl.textContent = ">";
+
+                const textEl = document.createElement("span");
+                if (sequence.type === 'green') textEl.className = "log-text-green";
+                else if (sequence.type === 'blue') textEl.className = "log-text-blue";
+                else if (sequence.type === 'magenta') textEl.className = "log-text-magenta";
+                
+                logLineEl.appendChild(tagEl);
+                logLineEl.appendChild(textEl);
+                
+                // insert line before cursor
+                terminalBody.insertBefore(logLineEl, cursor);
+                
+                // simulate typing effect line by line
+                await typeText(textEl, sequence.text);
+                terminalBody.scrollTop = terminalBody.scrollHeight;
+            }
+
+            typingActive = false;
+            btn.disabled = false;
+            btn.style.opacity = 1;
+            btn.style.cursor = 'pointer';
+        }
+
+        function typeText(element, text) {
+            return new Promise((resolve) => {
+                let index = 0;
+                // Type faster for longer log logs
+                const speed = text.length > 50 ? 5 : 15;
+                
+                function typeChar() {
+                    if (index < text.length) {
+                        element.textContent += text.charAt(index);
+                        index++;
+                        setTimeout(typeChar, speed);
+                    } else {
+                        resolve();
+                    }
+                }
+                typeChar();
+            });
+        }
+
+        // Live stats updates
+        setInterval(() => {
+            // Randomize CPU Load slightly around optimal levels
+            const cpuLoadVal = (1.8 + Math.random() * 1.5).toFixed(1);
+            document.getElementById("cpu-load").textContent = `${cpuLoadVal}%`;
+            
+            // Randomize Memory slightly
+            const memVal = Math.floor(242 + Math.random() * 10);
+            const memPercentVal = ((memVal / 512) * 100).toFixed(1);
+            
+            document.getElementById("mem-usage").textContent = `${memVal}MB`;
+            document.getElementById("mem-usage").nextElementSibling.innerHTML = `
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
+                    <polyline points="17 18 23 18 23 12"></polyline>
+                </svg>
+                ${memPercentVal}%
+            `;
+        }, 3000);
+
+        // Auto-run when DOM is fully ready
+        window.addEventListener("DOMContentLoaded", () => {
+            triggerPipelineRun();
+        });
+    </script>
+</body>
+</html>
