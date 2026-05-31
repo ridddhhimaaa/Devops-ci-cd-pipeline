@@ -151,6 +151,7 @@
             letter-spacing: 2px;
             background: linear-gradient(to right, #fff, var(--text-secondary));
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
@@ -272,6 +273,7 @@
             margin-bottom: 1.5rem;
             background: linear-gradient(135deg, #ffffff 30%, #e9d5ff 70%, #a855f7 100%);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
@@ -344,6 +346,7 @@
             letter-spacing: -1px;
             background: linear-gradient(135deg, #ffffff, #c084fc);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 1rem;
         }
@@ -527,24 +530,29 @@
             height: 2px;
             background: rgba(255, 255, 255, 0.05);
             z-index: -1;
+            overflow: hidden;
+            border-radius: 10px;
         }
 
-        .timeline-progress-line {
+        .timeline-connector::after {
+            content: '';
             position: absolute;
-            top: 28px;
-            left: 5%;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, var(--accent-purple) 0%, var(--accent-blue) 50%, var(--accent-emerald) 100%);
-            z-index: -1;
-            transform-origin: left;
-            animation: grow-line 5s infinite linear;
+            top: 0;
+            left: -150px;
+            width: 150px;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                var(--accent-purple) 30%, 
+                var(--accent-blue) 70%, 
+                transparent 100%);
+            box-shadow: 0 0 10px var(--accent-purple-glow);
+            animation: travel-pulse 4s infinite linear;
         }
 
-        @keyframes grow-line {
-            0% { transform: scaleX(0); }
-            80% { transform: scaleX(0.9); opacity: 1; }
-            100% { transform: scaleX(0.9); opacity: 0; }
+        @keyframes travel-pulse {
+            0% { left: -150px; }
+            100% { left: 100%; }
         }
 
         .timeline-node {
@@ -648,21 +656,29 @@
                 left: 48px;
                 width: 2px;
                 height: 85%;
+                overflow: hidden;
+                border-radius: 10px;
             }
 
-            .timeline-progress-line {
-                top: 0;
-                left: 48px;
-                width: 2px;
-                height: 85%;
-                transform-origin: top;
-                animation: grow-line-vertical 5s infinite linear;
+            .timeline-connector::after {
+                content: '';
+                position: absolute;
+                top: -150px;
+                left: 0;
+                width: 100%;
+                height: 150px;
+                background: linear-gradient(180deg, 
+                    transparent, 
+                    var(--accent-purple) 30%, 
+                    var(--accent-blue) 70%, 
+                    transparent 100%);
+                box-shadow: 0 0 10px var(--accent-purple-glow);
+                animation: travel-pulse-vertical 4s infinite linear;
             }
 
-            @keyframes grow-line-vertical {
-                0% { transform: scaleY(0); }
-                80% { transform: scaleY(0.9); opacity: 1; }
-                100% { transform: scaleY(0.9); opacity: 0; }
+            @keyframes travel-pulse-vertical {
+                0% { top: -150px; }
+                100% { top: 100%; }
             }
 
             .timeline-node {
@@ -701,6 +717,7 @@
             padding: 1px;
             background: linear-gradient(135deg, transparent 60%, rgba(168, 85, 247, 0.3) 100%);
             -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
             -webkit-mask-composite: xor;
             mask-composite: exclude;
             pointer-events: none;
@@ -1067,7 +1084,7 @@
             <svg class="logo-icon" viewBox="0 0 24 24">
                 <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
             </svg>
-            <span class="logo-text">ANTIGRAVITY</span>
+            <span class="logo-text">DEVOPS PIPELINE</span>
         </a>
         <nav>
             <ul class="nav-links">
@@ -1250,7 +1267,6 @@
             </div>
             <div class="timeline-wrapper">
                 <div class="timeline-connector"></div>
-                <div class="timeline-progress-line"></div>
                 
                 <div class="timeline-track">
                     <!-- Step 1: Developer -->
@@ -1507,7 +1523,7 @@
                             <div class="terminal-dot terminal-dot-yellow"></div>
                             <div class="terminal-dot terminal-dot-green"></div>
                         </div>
-                        <div class="terminal-title">pipeline-logs@antigravity:~$</div>
+                        <div class="terminal-title">pipeline-logs@devops-pipeline:~$</div>
                         <div class="terminal-actions">
                             <button class="terminal-run-btn" id="run-pipeline-btn" onclick="triggerPipelineRun()">
                                 <svg viewBox="0 0 24 24">
@@ -1535,7 +1551,7 @@
                     <svg viewBox="0 0 24 24">
                         <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
                     </svg>
-                    <span>ANTIGRAVITY // PIPELINE</span>
+                    <span>DEVOPS // PIPELINE</span>
                 </a>
                 <div class="footer-text">
                     Developed by <a href="mailto:riddhima@example.com">Riddhima Rai</a> &copy; 2026. All rights reserved.
@@ -1605,7 +1621,7 @@
         };
 
         const logSequences = [
-            { type: 'magenta', text: "pipeline-logs@antigravity:~$ initiating pipeline playback system..." },
+            { type: 'magenta', text: "pipeline-logs@devops-pipeline:~$ initiating pipeline playback system..." },
             { type: 'default', text: "[SCM] Pulling latest git tree from remote repository..." },
             { type: 'green', text: "[SCM] Fetch complete. Commit Hash: a9f8e72 | Author: Riddhima Rai" },
             { type: 'default', text: "[MAVEN] Scanning codebase directories and fetching pom.xml config..." },
