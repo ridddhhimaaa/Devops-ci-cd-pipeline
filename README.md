@@ -1,17 +1,5 @@
 <h1 align="center">Automated CI/CD Pipeline for Modern DevOps Infrastructure</h1>
 
-<h2 align="center">Table of Contents</h2>
-- [Project Overview](#project-overview)
-- [STAR Analysis](#star-analysis)
-- [Technologies Used](#technologies-used)
-- [Project Architecture](#project-architecture)
-- [Installation and Local Setup](#installation-and-local-setup)
-- [How to Access and Use](#how-to-access-and-use)
-- [Use Cases](#use-cases)
-- [Future Scope](#future-scope)
-- [Project Objectives and Key Learnings](#project-objectives-and-key-learnings)
-- [License](#license)
-
 <h2 align="center">Project Overview</h2>
 
 ### Purpose
